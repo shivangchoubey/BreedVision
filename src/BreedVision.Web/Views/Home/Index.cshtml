@@ -9,11 +9,11 @@
         <div class="row align-items-center gy-4">
             <div class="col-lg-7">
                 <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white border border-success-subtle shadow-sm mb-3">
-                    <span class="badge bg-success rounded-pill px-2 py-1">ICAR-NBAGR Standards</span>
+                    <span class="badge rounded-pill px-2 py-1" style="background-color: #71873f; color: #ffffff;">ICAR-NBAGR Standards</span>
                     <small class="text-secondary fw-semibold">Native Bovine AI Classification</small>
                 </div>
                 <h1 class="display-4 fw-extrabold text-dark mb-3">
-                    Image-Based Breed Recognition for <span class="text-success">Cattle & Buffaloes</span> of India
+                    Image-Based Breed Recognition for <span style="color: #71873f;">Cattle & Buffaloes</span> of India
                 </h1>
                 <p class="lead text-secondary mb-4">
                     Deploying deep learning (ResNet-50 metric learning via ONNX Runtime) to identify indigenous dairy and draught bovine breeds with verifiable confidence scores, detailed phenotypic profiles, and historical tracking.
@@ -22,19 +22,19 @@
                     <a asp-controller="Breed" asp-action="Identify" class="btn btn-success btn-lg px-4 py-2 fw-semibold rounded-pill shadow-sm">
                         <i class="bi bi-camera-fill me-2"></i> Identify Animal Breed
                     </a>
-                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-dark btn-lg px-4 py-2 fw-semibold rounded-pill">
+                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-lg px-4 py-2 fw-semibold rounded-pill" style="border: 2px solid #688557; color: #688557;">
                         <i class="bi bi-journal-text me-2"></i> Browse Encyclopedia
                     </a>
                 </div>
                 <div class="d-flex align-items-center gap-4 text-secondary small">
                     <div class="d-flex align-items-center gap-1">
-                        <i class="bi bi-check-circle-fill text-success"></i> Zero Hardcoded Scores
+                        <i class="bi bi-check-circle-fill" style="color: #71873f;"></i> Zero Hardcoded Scores
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <i class="bi bi-check-circle-fill text-success"></i> 100% Offline Capable
+                        <i class="bi bi-check-circle-fill" style="color: #71873f;"></i> 100% Offline Capable
                     </div>
                     <div class="d-flex align-items-center gap-1">
-                        <i class="bi bi-check-circle-fill text-success"></i> Calibrated Softmax
+                        <i class="bi bi-check-circle-fill" style="color: #71873f;"></i> Calibrated Softmax
                     </div>
                 </div>
             </div>
@@ -45,30 +45,30 @@
                         <img src="~/images/indian_cattle_hero.jpg" alt="Indigenous Indian Gir Cattle" class="img-fluid w-100 object-fit-cover" style="height: 280px;" />
                         <div class="position-absolute top-0 start-0 m-3">
                             <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm" style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
-                                <i class="bi bi-shield-check text-success me-1"></i> Indigenous Gir Cattle
+                                <i class="bi bi-shield-check me-1" style="color: #e0b87e;"></i> Indigenous Gir Cattle
                             </span>
                         </div>
                         <div class="position-absolute bottom-0 end-0 m-3">
-                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
-                                <i class="bi bi-patch-check-fill me-1"></i> ICAR-NBAGR Registered
+                            <span class="badge text-white px-3 py-2 rounded-pill shadow-sm" style="background-color: #71873f;">
+                                <i class="bi bi-patch-check-fill me-1" style="color: #e0b87e;"></i> ICAR-NBAGR Registered
                             </span>
                         </div>
                     </div>
                     <div class="card-body p-3 bg-white">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <small class="fw-bold text-dark"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Instant Verification Test</small>
-                            <span class="badge bg-light text-secondary border">Live Research Samples</span>
+                            <small class="fw-bold" style="color: #1e261a;"><i class="bi bi-lightning-charge-fill me-1" style="color: #a36627;"></i> Instant Verification Test</small>
+                            <span class="badge" style="background-color: rgba(171, 190, 153, 0.25); color: #4b6338; border: 1px solid #abbe99;">Live Research Samples</span>
                         </div>
                         <div class="row g-2">
                             <div class="col-6">
                                 <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="gir" class="btn btn-outline-primary btn-sm d-flex flex-column p-2 rounded-3 text-start w-100 h-100">
-                                    <div class="fw-bold text-dark small"><i class="bi bi-check-circle-fill text-primary me-1"></i> Test Gir</div>
+                                    <div class="fw-bold small" style="color: #a36627;"><i class="bi bi-check-circle-fill me-1" style="color: #a36627;"></i> Test Gir</div>
                                     <small class="text-secondary" style="font-size: 0.72rem;">Zebu Dairy Cattle</small>
                                 </a>
                             </div>
                             <div class="col-6">
                                 <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="bhadawari" class="btn btn-outline-success btn-sm d-flex flex-column p-2 rounded-3 text-start w-100 h-100">
-                                    <div class="fw-bold text-dark small"><i class="bi bi-check-circle-fill text-success me-1"></i> Test Bhadawari</div>
+                                    <div class="fw-bold small" style="color: #71873f;"><i class="bi bi-check-circle-fill me-1" style="color: #71873f;"></i> Test Bhadawari</div>
                                     <small class="text-secondary" style="font-size: 0.72rem;">High-Fat River Buffalo</small>
                                 </a>
                             </div>
@@ -86,7 +86,7 @@
         <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-success-subtle p-3 text-success fs-3">
+                    <div class="rounded-3 p-3 fs-3" style="background-color: rgba(113, 135, 63, 0.16); color: #71873f;">
                         <i class="bi bi-shield-check"></i>
                     </div>
                     <div>
@@ -99,7 +99,7 @@
         <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-primary-subtle p-3 text-primary fs-3">
+                    <div class="rounded-3 p-3 fs-3" style="background-color: rgba(163, 102, 39, 0.16); color: #a36627;">
                         <i class="bi bi-pie-chart-fill"></i>
                     </div>
                     <div>
@@ -112,7 +112,7 @@
         <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-info-subtle p-3 text-info fs-3">
+                    <div class="rounded-3 p-3 fs-3" style="background-color: rgba(104, 133, 87, 0.16); color: #688557;">
                         <i class="bi bi-cpu-fill"></i>
                     </div>
                     <div>
@@ -125,7 +125,7 @@
         <div class="col-sm-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-warning-subtle p-3 text-warning fs-3">
+                    <div class="rounded-3 p-3 fs-3" style="background-color: rgba(224, 184, 126, 0.3); color: #8c521b;">
                         <i class="bi bi-speedometer2"></i>
                     </div>
                     <div>
@@ -141,32 +141,32 @@
 <!-- Architecture Pipeline Flow -->
 <div class="container my-5">
     <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-        <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-diagram-3-fill text-success me-2"></i> How BreedVision Works</h4>
+        <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-diagram-3-fill me-2" style="color: #71873f;"></i> How BreedVision Works</h4>
         <div class="row g-4 text-center">
             <div class="col-md-3">
                 <div class="p-3 border rounded-3 h-100 bg-light">
-                    <div class="fs-2 text-primary mb-2"><i class="bi bi-upload"></i></div>
+                    <div class="fs-2 mb-2" style="color: #a36627;"><i class="bi bi-upload"></i></div>
                     <h6 class="fw-bold">1. Image Ingestion</h6>
                     <p class="small text-secondary mb-0">Multi-format upload (JPG/PNG/WEBP) with magic byte validation & size checks.</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="p-3 border rounded-3 h-100 bg-light">
-                    <div class="fs-2 text-success mb-2"><i class="bi bi-crop"></i></div>
+                    <div class="fs-2 mb-2" style="color: #71873f;"><i class="bi bi-crop"></i></div>
                     <h6 class="fw-bold">2. Tensor Preprocessing</h6>
                     <p class="small text-secondary mb-0">ImageSharp resizes to 256x256, center-crops to 224x224, and standardizes RGB channels.</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="p-3 border rounded-3 h-100 bg-light">
-                    <div class="fs-2 text-warning mb-2"><i class="bi bi-cpu"></i></div>
+                    <div class="fs-2 mb-2" style="color: #688557;"><i class="bi bi-cpu"></i></div>
                     <h6 class="fw-bold">3. ONNX Feature Extraction</h6>
                     <p class="small text-secondary mb-0">Local ResNet-50 execution outputs a 2048-dim feature vector in ~25ms on CPU.</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="p-3 border rounded-3 h-100 bg-light">
-                    <div class="fs-2 text-danger mb-2"><i class="bi bi-graph-up"></i></div>
+                    <div class="fs-2 mb-2" style="color: #a36627;"><i class="bi bi-graph-up"></i></div>
                     <h6 class="fw-bold">4. Metric Matching & Softmax</h6>
                     <p class="small text-secondary mb-0">Cosine similarity against 10 breed centroid prototypes with calibrated softmax probabilities.</p>
                 </div>

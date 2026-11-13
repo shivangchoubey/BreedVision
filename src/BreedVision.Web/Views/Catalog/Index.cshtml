@@ -34,10 +34,10 @@
         <a asp-action="Index" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3 @(string.IsNullOrEmpty(selectedSpecies) ? "btn-dark" : "btn-outline-secondary")">
             All Breeds (10)
         </a>
-        <a asp-action="Index" asp-route-species="Cattle" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3 @(selectedSpecies == "Cattle" ? "btn-primary" : "btn-outline-primary")">
+        <a asp-action="Index" asp-route-species="Cattle" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3" style="@(selectedSpecies == "Cattle" ? "background-color: #a36627; color: white; border-color: #a36627;" : "border: 1px solid #a36627; color: #a36627;")">
             <i class="bi bi-shield-check me-1"></i> Cattle Breeds (5)
         </a>
-        <a asp-action="Index" asp-route-species="Buffalo" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3 @(selectedSpecies == "Buffalo" ? "btn-purple" : "btn-outline-secondary")" style="@(selectedSpecies == "Buffalo" ? "background-color: #6d28d9; color: white;" : "")">
+        <a asp-action="Index" asp-route-species="Buffalo" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3" style="@(selectedSpecies == "Buffalo" ? "background-color: #71873f; color: white; border-color: #71873f;" : "border: 1px solid #71873f; color: #71873f;")">
             <i class="bi bi-water me-1"></i> River Buffalo Breeds (5)
         </a>
     </div>
@@ -101,3 +101,4 @@
         </div>
     }
 </div>
+
