@@ -1,4 +1,4 @@
-﻿@model BreedVision.Web.Services.Interfaces.DashboardStatsViewModel
+@model BreedVision.Web.Services.Interfaces.DashboardStatsViewModel
 @{
     ViewData["Title"] = "Dashboard";
 }
@@ -39,34 +39,39 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <!-- Quick Test Card -->
-                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                    <div class="card-header bg-dark text-white p-3 d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-lightning-charge-fill text-warning"></i>
-                            <span class="fw-bold">Instant Verified Verification</span>
+                <!-- Hero Cattle Image Showcase Card -->
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                    <div class="position-relative">
+                        <img src="~/images/indian_cattle_hero.jpg" alt="Indigenous Indian Gir Cattle" class="img-fluid w-100 object-fit-cover" style="height: 280px;" />
+                        <div class="position-absolute top-0 start-0 m-3">
+                            <span class="badge bg-dark bg-opacity-75 text-white px-3 py-2 rounded-pill shadow-sm" style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+                                <i class="bi bi-shield-check text-success me-1"></i> Indigenous Gir Cattle
+                            </span>
                         </div>
-                        <span class="badge bg-secondary">Preloaded Test Set</span>
+                        <div class="position-absolute bottom-0 end-0 m-3">
+                            <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-patch-check-fill me-1"></i> ICAR-NBAGR Registered
+                            </span>
+                        </div>
                     </div>
-                    <div class="card-body p-4 bg-white">
-                        <p class="text-secondary small mb-3">
-                            Test the live ONNX inference engine immediately using pre-evaluated photos from the verified research dataset:
-                        </p>
-                        <div class="d-grid gap-2">
-                            <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="gir" class="btn btn-outline-primary d-flex align-items-center justify-content-between p-3 rounded-3 text-start">
-                                <div>
-                                    <div class="fw-bold text-dark"><i class="bi bi-tag-fill text-primary me-1"></i> Test Gir Cattle</div>
-                                    <small class="text-secondary">Premier Dairy Zebu • Saurashtra, Gujarat</small>
-                                </div>
-                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Run Test <i class="bi bi-arrow-right"></i></span>
-                            </a>
-                            <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="bhadawari" class="btn btn-outline-success d-flex align-items-center justify-content-between p-3 rounded-3 text-start">
-                                <div>
-                                    <div class="fw-bold text-dark"><i class="bi bi-tag-fill text-success me-1"></i> Test Bhadawari Buffalo</div>
-                                    <small class="text-secondary">High-Fat River Buffalo • Uttar Pradesh / MP</small>
-                                </div>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">Run Test <i class="bi bi-arrow-right"></i></span>
-                            </a>
+                    <div class="card-body p-3 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <small class="fw-bold text-dark"><i class="bi bi-lightning-charge-fill text-warning me-1"></i> Instant Verification Test</small>
+                            <span class="badge bg-light text-secondary border">Live Research Samples</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="gir" class="btn btn-outline-primary btn-sm d-flex flex-column p-2 rounded-3 text-start w-100 h-100">
+                                    <div class="fw-bold text-dark small"><i class="bi bi-check-circle-fill text-primary me-1"></i> Test Gir</div>
+                                    <small class="text-secondary" style="font-size: 0.72rem;">Zebu Dairy Cattle</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="bhadawari" class="btn btn-outline-success btn-sm d-flex flex-column p-2 rounded-3 text-start w-100 h-100">
+                                    <div class="fw-bold text-dark small"><i class="bi bi-check-circle-fill text-success me-1"></i> Test Bhadawari</div>
+                                    <small class="text-secondary" style="font-size: 0.72rem;">High-Fat River Buffalo</small>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
