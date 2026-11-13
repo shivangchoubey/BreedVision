@@ -1,0 +1,116 @@
+:root {
+    --bv-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --bv-font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --bv-primary: #15803d;
+    --bv-primary-hover: #166534;
+    --bv-dark: #0f172a;
+    --bv-slate: #1e293b;
+    --bv-accent: #0284c7;
+    --bv-card-bg: #ffffff;
+    --bv-card-border: #e2e8f0;
+}
+
+body {
+    font-family: var(--bv-font-sans);
+    color: #1e293b;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-name {
+    font-family: var(--bv-heading);
+    letter-spacing: -0.02em;
+}
+
+/* Navbar */
+.bg-dark-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.15s ease-in-out;
+}
+
+.nav-link.active {
+    color: #4ade80 !important;
+    font-weight: 600;
+}
+
+.hover-white:hover {
+    color: #ffffff !important;
+}
+
+/* Hero Section */
+.hero-gradient {
+    background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 50%),
+                radial-gradient(circle at bottom left, rgba(2, 132, 199, 0.1), transparent 50%),
+                linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* Cards */
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Upload Dropzone */
+.dropzone-container {
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.dropzone-container:hover,
+.dropzone-container.dragover {
+    border-color: #16a34a;
+    background-color: #f0fdf4;
+}
+
+/* Metric Pill / Badges */
+.badge-cattle {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.badge-buffalo {
+    background-color: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+}
+
+/* Progress bar styled */
+.progress-confidence {
+    height: 10px;
+    border-radius: 6px;
+    background-color: #e2e8f0;
+}
+
+/* Floating animation */
+@keyframes pulseSubtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.pulse-animation {
+    animation: pulseSubtle 2s infinite ease-in-out;
+}

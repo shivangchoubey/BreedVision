@@ -1,0 +1,184 @@
+@model BreedVision.Web.Models.ViewModels.PredictionResultViewModel
+@{
+    ViewData["Title"] = $"Result: {Model.PredictedBreedName}";
+}
+
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Breed" asp-action="Identify">Identify</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Prediction Result #@Model.PredictionRecordId</li>
+        </ol>
+    </nav>
+
+    <!-- Out-Of-Distribution / Low Confidence Warning Banner -->
+    @if (Model.IsLowConfidence)
+    {
+        <div class="alert alert-warning border-warning shadow-sm rounded-4 p-4 mb-4 d-flex align-items-start gap-3" role="alert">
+            <div class="fs-2 text-warning lh-1"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <h5 class="alert-heading fw-bold mb-1">Uncertain / Low-Confidence Detection</h5>
+                <p class="mb-2 text-dark">
+                    The highest similarity score for this image is below the confidence threshold (@Model.ConfidencePercent.ToString("F1")%). 
+                    This image may depict an <strong>unsupported breed</strong>, a crossbred specimen, a non-bovine subject, or the image may lack clear lighting or lateral phenotypic features (such as horn shape, hump, or coat color).
+                </p>
+                <div class="small text-secondary">
+                    <i class="bi bi-info-circle me-1"></i> The model has still provided its closest mathematical match below for research and comparative reference.
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Left Column: Uploaded Image & Inference Telemetry -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+                <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold small"><i class="bi bi-image me-1"></i> Analyzed Photo</span>
+                    <span class="badge bg-secondary">@Model.OriginalFileName</span>
+                </div>
+                <div class="p-3 text-center bg-light">
+                    <img src="@Model.ImageUrl" alt="@Model.PredictedBreedName" class="img-fluid rounded-3 shadow-sm border object-fit-contain" style="max-height: 380px; width: 100%;" />
+                </div>
+                <div class="card-body p-3 bg-white">
+                    <div class="list-group list-group-flush small">
+                        <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                            <span class="text-secondary">Inference Latency:</span>
+                            <span class="fw-bold text-dark"><i class="bi bi-stopwatch text-success me-1"></i> @Model.InferenceTimeMs ms</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                            <span class="text-secondary">Execution Engine:</span>
+                            <span class="fw-bold text-dark">ONNX Runtime (CPU)</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                            <span class="text-secondary">Database Audit Log:</span>
+                            <span class="badge bg-success-subtle text-success">Saved (Record #@Model.PredictionRecordId)</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                            <span class="text-secondary">Timestamp:</span>
+                            <span class="text-dark">@Model.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.UserNotes))
+                        {
+                            <div class="list-group-item px-0 py-2">
+                                <span class="text-secondary d-block">User Observation Notes:</span>
+                                <span class="text-dark fw-medium">@Model.UserNotes</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="d-flex gap-2">
+                <a asp-action="Identify" class="btn btn-outline-success flex-grow-1 rounded-pill py-2 fw-semibold">
+                    <i class="bi bi-camera me-1"></i> Classify Another Image
+                </a>
+                <a asp-controller="History" asp-action="Index" class="btn btn-outline-secondary rounded-pill py-2 px-3">
+                    <i class="bi bi-clock-history"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Right Column: Prediction Details & Breed Knowledge Profile -->
+        <div class="col-lg-7">
+            <!-- Top Prediction Header Card -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                        <span class="badge @(Model.BreedProfile?.Species == "Buffalo" ? "badge-buffalo" : "badge-cattle") fs-6 px-3 py-1 rounded-pill">
+                            <i class="bi bi-patch-check-fill me-1"></i> @(Model.BreedProfile?.Species ?? "Indigenous Bovine")
+                        </span>
+                        <div class="text-end">
+                            <small class="text-secondary d-block">Prediction Confidence</small>
+                            <span class="fs-3 fw-extrabold @(Model.ConfidencePercent >= 50 ? "text-success" : "text-warning")">
+                                @Model.ConfidencePercent.ToString("F1")%
+                            </span>
+                        </div>
+                    </div>
+
+                    <h2 class="display-6 fw-extrabold text-dark mb-1">
+                        @Model.PredictedBreedName
+                    </h2>
+                    @if (Model.BreedProfile != null)
+                    {
+                        <p class="text-secondary fst-italic mb-3">@Model.BreedProfile.ScientificName • @Model.BreedProfile.ConservationStatus</p>
+                        <p class="text-dark mb-4">@Model.BreedProfile.Description</p>
+                    }
+
+                    <!-- Top-5 Probability Distribution Bar Chart -->
+                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Top-5 Model Class Probability Distribution</h6>
+                    <div class="bg-light p-3 rounded-3 mb-4">
+                        @foreach (var pred in Model.TopPredictions)
+                        {
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                    <span>
+                                        <span class="text-secondary me-1">#@pred.Rank</span>
+                                        <span class="@(pred.Rank == 1 ? "fw-bold text-dark" : "text-secondary")">@pred.BreedName</span>
+                                        <span class="badge bg-secondary-subtle text-secondary py-0 ms-1">@pred.Species</span>
+                                    </span>
+                                    <span class="@(pred.Rank == 1 ? "text-success fw-bold" : "text-secondary")">@pred.ConfidencePercent.ToString("F1")%</span>
+                                </div>
+                                <div class="progress progress-confidence">
+                                    <div class="progress-bar @(pred.Rank == 1 ? (Model.IsLowConfidence ? "bg-warning" : "bg-success") : "bg-secondary bg-opacity-50")" 
+                                         role="progressbar" 
+                                         style="width: @pred.ConfidencePercent%;" 
+                                         aria-valuenow="@pred.ConfidencePercent" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Phenotypic Characteristics Cards -->
+                    @if (Model.BreedProfile != null)
+                    {
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-card-checklist text-success me-2"></i> Phenotypic Traits & Productivity (ICAR-NBAGR)</h6>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100 bg-white shadow-2xs">
+                                    <small class="text-secondary d-block fw-semibold mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Native Origin / Tract</small>
+                                    <div class="fw-bold text-dark small">@Model.BreedProfile.OriginState</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100 bg-white shadow-2xs">
+                                    <small class="text-secondary d-block fw-semibold mb-1"><i class="bi bi-droplet-fill text-info me-1"></i> Average Lactation Milk Yield</small>
+                                    <div class="fw-bold text-dark small">@Model.BreedProfile.AverageMilkYield</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100 bg-white shadow-2xs">
+                                    <small class="text-secondary d-block fw-semibold mb-1"><i class="bi bi-tools text-primary me-1"></i> Primary Agricultural Utility</small>
+                                    <div class="fw-bold text-dark small">@Model.BreedProfile.PrimaryUtility</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="border rounded-3 p-3 h-100 bg-white shadow-2xs">
+                                    <small class="text-secondary d-block fw-semibold mb-1"><i class="bi bi-compass-fill text-warning me-1"></i> Horn Morphology</small>
+                                    <div class="fw-bold text-dark small">@Model.BreedProfile.HornCharacteristics</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="border rounded-3 p-3 bg-white shadow-2xs">
+                                    <small class="text-secondary d-block fw-semibold mb-1"><i class="bi bi-eye-fill text-success me-1"></i> Distinguishing Physical Characteristics</small>
+                                    <div class="text-dark small">@Model.BreedProfile.PhysicalTraits</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-2">
+                            <a asp-controller="Catalog" asp-action="Details" asp-route-id="@Model.BreedProfile.Id" class="btn btn-outline-dark rounded-pill px-4">
+                                <i class="bi bi-book-half me-1"></i> View Full Encyclopedia Entry
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

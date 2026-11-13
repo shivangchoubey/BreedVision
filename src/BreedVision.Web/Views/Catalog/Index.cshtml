@@ -1,0 +1,103 @@
+@model List<BreedVision.Web.Models.Entities.Breed>
+@{
+    ViewData["Title"] = "Breed Encyclopedia";
+    var selectedSpecies = ViewBag.SelectedSpecies as string;
+    var searchTerm = ViewBag.SearchTerm as string;
+}
+
+<div class="container py-5">
+    <!-- Header -->
+    <div class="row align-items-end justify-content-between mb-4 gy-3">
+        <div class="col-md-7">
+            <span class="badge bg-success-subtle text-success border border-success-subtle mb-2">ICAR-NBAGR Registered</span>
+            <h2 class="display-6 fw-bold text-dark mb-1">Indigenous Bovine Encyclopedia</h2>
+            <p class="text-secondary mb-0">Official phenotypic standards, origin tracts, horn structures, and milk productivity data for 10 prominent Indian cattle and buffalo breeds.</p>
+        </div>
+        <div class="col-md-5">
+            <form method="get" asp-action="Index" class="d-flex gap-2">
+                <input type="hidden" name="species" value="@selectedSpecies" />
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-secondary"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="Search by breed, state, utility..." value="@searchTerm" />
+                    <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                    @if (!string.IsNullOrEmpty(searchTerm) || !string.IsNullOrEmpty(selectedSpecies))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-danger" title="Clear filters"><i class="bi bi-x-lg"></i></a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="d-flex gap-2 mb-4">
+        <a asp-action="Index" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3 @(string.IsNullOrEmpty(selectedSpecies) ? "btn-dark" : "btn-outline-secondary")">
+            All Breeds (10)
+        </a>
+        <a asp-action="Index" asp-route-species="Cattle" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3 @(selectedSpecies == "Cattle" ? "btn-primary" : "btn-outline-primary")">
+            <i class="bi bi-shield-check me-1"></i> Cattle Breeds (5)
+        </a>
+        <a asp-action="Index" asp-route-species="Buffalo" asp-route-search="@searchTerm" class="btn btn-sm rounded-pill px-3 @(selectedSpecies == "Buffalo" ? "btn-purple" : "btn-outline-secondary")" style="@(selectedSpecies == "Buffalo" ? "background-color: #6d28d9; color: white;" : "")">
+            <i class="bi bi-water me-1"></i> River Buffalo Breeds (5)
+        </a>
+    </div>
+
+    <!-- Cards Grid -->
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="fs-1 text-secondary mb-2"><i class="bi bi-search"></i></div>
+            <h5 class="fw-bold">No breeds found</h5>
+            <p class="text-secondary small mb-3">No breed matched your search query "@searchTerm".</p>
+            <div>
+                <a asp-action="Index" class="btn btn-outline-dark rounded-pill btn-sm">Reset Filters</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var breed in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white card-hover">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge @(breed.Species == "Buffalo" ? "badge-buffalo" : "badge-cattle") px-3 py-1 rounded-pill">
+                                    @breed.Species
+                                </span>
+                                <small class="text-secondary fst-italic">@breed.ScientificName</small>
+                            </div>
+
+                            <h4 class="fw-bold text-dark mb-1">@breed.Name</h4>
+                            <p class="text-secondary small mb-3 text-truncate" title="@breed.OriginState">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> @breed.OriginState
+                            </p>
+
+                            <p class="small text-secondary mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                @breed.Description
+                            </p>
+
+                            <div class="border-top pt-3 mt-auto">
+                                <div class="row g-2 small mb-3">
+                                    <div class="col-6">
+                                        <span class="text-secondary d-block" style="font-size: 0.75rem;">Primary Utility</span>
+                                        <span class="fw-bold text-dark">@breed.PrimaryUtility</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-secondary d-block" style="font-size: 0.75rem;">Avg Milk Yield</span>
+                                        <span class="fw-bold text-success text-truncate d-block" title="@breed.AverageMilkYield">@breed.AverageMilkYield</span>
+                                    </div>
+                                </div>
+
+                                <a asp-action="Details" asp-route-id="@breed.Id" class="btn btn-outline-dark w-100 rounded-pill btn-sm fw-semibold">
+                                    View Full Dossier <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

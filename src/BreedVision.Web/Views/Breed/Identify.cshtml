@@ -1,0 +1,199 @@
+@{
+    ViewData["Title"] = "Identify Breed";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="card-header bg-dark-gradient text-white p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="fw-bold mb-1"><i class="bi bi-camera-fill text-success me-2"></i> Identify Bovine Breed</h3>
+                            <p class="text-light-emphasis small mb-0">Upload a photograph of an Indian cattle or buffalo to classify its breed.</p>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
+                            <i class="bi bi-cpu-fill me-1"></i> ONNX Active
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Identify" method="post" enctype="multipart/form-data" id="uploadForm">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="alert alert-danger mb-4 shadow-sm" style="display: @(ViewData.ModelState.IsValid ? "none" : "block");"></div>
+
+                        <!-- Drag and Drop Zone -->
+                        <div class="dropzone-container p-4 p-md-5 text-center mb-4" id="dropzone">
+                            <input type="file" name="imageFile" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp,.bmp" class="d-none" required />
+                            
+                            <div id="dropzonePrompt">
+                                <div class="mb-3 text-success fs-1">
+                                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">Drag and drop your animal image here</h5>
+                                <p class="text-secondary small mb-3">Supports JPG, PNG, WEBP, BMP (Maximum file size: 10 MB)</p>
+                                <button type="button" class="btn btn-outline-success px-4 rounded-pill" onclick="document.getElementById('imageFileInput').click();">
+                                    <i class="bi bi-folder2-open me-1"></i> Browse From Computer
+                                </button>
+                            </div>
+
+                            <!-- Client-side Preview Box -->
+                            <div id="previewContainer" class="d-none">
+                                <div class="position-relative d-inline-block mb-3">
+                                    <img id="imagePreview" src="#" alt="Preview" class="rounded-3 shadow-sm object-fit-contain border" style="max-height: 260px; max-width: 100%;" />
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle" id="removeImageBtn" title="Remove image">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-dark" id="fileNameDisplay"></div>
+                                    <small class="text-secondary" id="fileSizeDisplay"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Notes -->
+                        <div class="mb-4">
+                            <label for="userNotes" class="form-label fw-semibold text-dark">
+                                <i class="bi bi-pencil-square me-1"></i> Field Notes / Observation (Optional)
+                            </label>
+                            <input type="text" name="userNotes" id="userNotes" class="form-control rounded-3" placeholder="e.g. Sighted at dairy farm in Junagadh, estimated lactation 3..." maxlength="500" />
+                        </div>
+
+                        <!-- Submit Button with Processing State -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" id="submitBtn" class="btn btn-success btn-lg py-3 fw-bold rounded-pill shadow-sm" disabled>
+                                <i class="bi bi-lightning-charge-fill me-1"></i> Run Breed Identification
+                            </button>
+                        </div>
+
+                        <!-- Inference Progress Overlay -->
+                        <div id="loadingOverlay" class="d-none text-center py-4">
+                            <div class="spinner-border text-success mb-2" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Analyzing image...</span>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-1">Executing ONNX ResNet-50 Model...</h5>
+                            <p class="text-secondary small mb-0">Extracting 2048-dim feature tensor and matching breed prototypes...</p>
+                        </div>
+                    </form>
+
+                    <!-- Preloaded Samples Shortcut -->
+                    <div class="border-top pt-4 mt-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-secondary text-uppercase tracking-wider">Quick Research Samples</span>
+                            <span class="badge bg-light text-secondary border">One-Click Testing</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <a asp-action="TestSample" asp-route-sampleName="gir" class="btn btn-light border text-start w-100 p-2 d-flex align-items-center gap-2 rounded-3 hover-shadow">
+                                    <i class="bi bi-check-circle text-primary fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold text-dark small">Gir Cattle Sample</div>
+                                        <small class="text-secondary" style="font-size: 0.75rem;">Verified Saurashtra specimen</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-sm-6">
+                                <a asp-action="TestSample" asp-route-sampleName="bhadawari" class="btn btn-light border text-start w-100 p-2 d-flex align-items-center gap-2 rounded-3 hover-shadow">
+                                    <i class="bi bi-check-circle text-success fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold text-dark small">Bhadawari Buffalo Sample</div>
+                                        <small class="text-secondary" style="font-size: 0.75rem;">High butterfat river buffalo</small>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('imageFileInput');
+        const dropzonePrompt = document.getElementById('dropzonePrompt');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Drag and drop events
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFileSelect(fileInput.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            if (!file.type.match('image.*')) {
+                alert('Please upload an image file (JPG, PNG, WEBP, BMP).');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size exceeds the 10 MB limit.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                fileNameDisplay.textContent = file.name;
+                fileSizeDisplay.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                dropzonePrompt.classList.add('d-none');
+                previewContainer.classList.remove('d-none');
+                submitBtn.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        removeImageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.value = '';
+            imagePreview.src = '#';
+            previewContainer.classList.add('d-none');
+            dropzonePrompt.classList.remove('d-none');
+            submitBtn.disabled = true;
+        });
+
+        uploadForm.addEventListener('submit', () => {
+            submitBtn.classList.add('d-none');
+            loadingOverlay.classList.remove('d-none');
+        });
+    </script>
+}

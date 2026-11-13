@@ -1,0 +1,130 @@
+@model BreedVision.Web.Models.ViewModels.BreedDetailViewModel
+@{
+    ViewData["Title"] = $"{Model.Breed.Name} Breed Dossier";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Catalog" asp-action="Index">Breed Encyclopedia</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Breed.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <span class="badge @(Model.Breed.Species == "Buffalo" ? "badge-buffalo" : "badge-cattle") fs-6 px-3 py-1 rounded-pill">
+                        @Model.Breed.Species Breed
+                    </span>
+                    <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill">
+                        @Model.Breed.ConservationStatus
+                    </span>
+                </div>
+
+                <h1 class="display-5 fw-extrabold text-dark mb-1">@Model.Breed.Name</h1>
+                <p class="text-secondary fst-italic fs-6 mb-4">
+                    Scientific Classification: <strong>@Model.Breed.ScientificName</strong>
+                </p>
+
+                <div class="lead text-dark mb-4">
+                    @Model.Breed.Description
+                </div>
+
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                    <i class="bi bi-card-checklist text-success me-2"></i> Phenotypic Standards & Production Metrics
+                </h5>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <span class="text-secondary small d-block fw-semibold mb-1">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> Native Origin / Breeding Tract
+                            </span>
+                            <div class="fw-bold text-dark">@Model.Breed.OriginState</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <span class="text-secondary small d-block fw-semibold mb-1">
+                                <i class="bi bi-droplet-fill text-info me-1"></i> Average Milk Yield per Lactation
+                            </span>
+                            <div class="fw-bold text-success">@Model.Breed.AverageMilkYield</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <span class="text-secondary small d-block fw-semibold mb-1">
+                                <i class="bi bi-tools text-primary me-1"></i> Primary Agricultural Utility
+                            </span>
+                            <div class="fw-bold text-dark">@Model.Breed.PrimaryUtility</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <span class="text-secondary small d-block fw-semibold mb-1">
+                                <i class="bi bi-compass-fill text-warning me-1"></i> Horn Morphology
+                            </span>
+                            <div class="fw-bold text-dark">@Model.Breed.HornCharacteristics</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="border rounded-3 p-3 bg-light">
+                            <span class="text-secondary small d-block fw-semibold mb-1">
+                                <i class="bi bi-eye-fill text-success me-1"></i> Distinctive Physical Traits
+                            </span>
+                            <div class="text-dark">@Model.Breed.PhysicalTraits</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 pt-2">
+                    <a asp-controller="Breed" asp-action="Identify" class="btn btn-success rounded-pill px-4 fw-semibold">
+                        <i class="bi bi-camera me-1"></i> Classify Image for this Breed
+                    </a>
+                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Catalog
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Telemetry Stats Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <h5 class="fw-bold mb-3 text-dark"><i class="bi bi-graph-up-arrow text-primary me-2"></i> System Inferences</h5>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Total Times Identified</span>
+                    <span class="fs-3 fw-bold text-dark">@Model.TotalPredictionsCount</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-secondary small d-block">Historical Average Confidence</span>
+                    <span class="fs-4 fw-bold text-success">@(Model.AverageConfidence > 0 ? $"{Model.AverageConfidence:F1}%" : "No logs yet")</span>
+                </div>
+            </div>
+
+            <!-- Recent Inferences for this breed -->
+            @if (Model.RecentPredictions.Any())
+            {
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-clock-history me-2"></i> Recent Detections</h6>
+                    <div class="list-group list-group-flush">
+                        @foreach (var p in Model.RecentPredictions)
+                        {
+                            <a asp-controller="Breed" asp-action="Result" asp-route-id="@p.Id" class="list-group-item list-group-item-action px-0 py-2 d-flex align-items-center gap-2">
+                                <img src="@p.SavedImagePath" alt="@p.PredictedBreedName" class="rounded object-fit-cover" style="width: 48px; height: 48px;" />
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="fw-semibold text-dark text-truncate small">@p.OriginalFileName</div>
+                                    <small class="text-secondary">@p.PredictionTimestamp.ToLocalTime().ToString("MMM dd, yyyy")</small>
+                                </div>
+                                <span class="badge bg-success-subtle text-success">@p.ConfidenceScore.ToString("F1")%</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

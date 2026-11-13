@@ -1,0 +1,203 @@
+﻿@model BreedVision.Web.Services.Interfaces.DashboardStatsViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Hero Section -->
+<section class="hero-gradient py-5">
+    <div class="container py-3">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white border border-success-subtle shadow-sm mb-3">
+                    <span class="badge bg-success rounded-pill px-2 py-1">ICAR-NBAGR Standards</span>
+                    <small class="text-secondary fw-semibold">Native Bovine AI Classification</small>
+                </div>
+                <h1 class="display-4 fw-extrabold text-dark mb-3">
+                    Image-Based Breed Recognition for <span class="text-success">Cattle & Buffaloes</span> of India
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Deploying deep learning (ResNet-50 metric learning via ONNX Runtime) to identify indigenous dairy and draught bovine breeds with verifiable confidence scores, detailed phenotypic profiles, and historical tracking.
+                </p>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <a asp-controller="Breed" asp-action="Identify" class="btn btn-success btn-lg px-4 py-2 fw-semibold rounded-pill shadow-sm">
+                        <i class="bi bi-camera-fill me-2"></i> Identify Animal Breed
+                    </a>
+                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-dark btn-lg px-4 py-2 fw-semibold rounded-pill">
+                        <i class="bi bi-journal-text me-2"></i> Browse Encyclopedia
+                    </a>
+                </div>
+                <div class="d-flex align-items-center gap-4 text-secondary small">
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-check-circle-fill text-success"></i> Zero Hardcoded Scores
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-check-circle-fill text-success"></i> 100% Offline Capable
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-check-circle-fill text-success"></i> Calibrated Softmax
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <!-- Quick Test Card -->
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-dark text-white p-3 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-lightning-charge-fill text-warning"></i>
+                            <span class="fw-bold">Instant Verified Verification</span>
+                        </div>
+                        <span class="badge bg-secondary">Preloaded Test Set</span>
+                    </div>
+                    <div class="card-body p-4 bg-white">
+                        <p class="text-secondary small mb-3">
+                            Test the live ONNX inference engine immediately using pre-evaluated photos from the verified research dataset:
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="gir" class="btn btn-outline-primary d-flex align-items-center justify-content-between p-3 rounded-3 text-start">
+                                <div>
+                                    <div class="fw-bold text-dark"><i class="bi bi-tag-fill text-primary me-1"></i> Test Gir Cattle</div>
+                                    <small class="text-secondary">Premier Dairy Zebu • Saurashtra, Gujarat</small>
+                                </div>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Run Test <i class="bi bi-arrow-right"></i></span>
+                            </a>
+                            <a asp-controller="Breed" asp-action="TestSample" asp-route-sampleName="bhadawari" class="btn btn-outline-success d-flex align-items-center justify-content-between p-3 rounded-3 text-start">
+                                <div>
+                                    <div class="fw-bold text-dark"><i class="bi bi-tag-fill text-success me-1"></i> Test Bhadawari Buffalo</div>
+                                    <small class="text-secondary">High-Fat River Buffalo • Uttar Pradesh / MP</small>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Run Test <i class="bi bi-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- System Statistics Row -->
+<div class="container my-5">
+    <div class="row g-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 bg-success-subtle p-3 text-success fs-3">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-dark">@Model.TotalBreedsCount</div>
+                        <div class="text-secondary small fw-medium">Core Indigenous Breeds</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 bg-primary-subtle p-3 text-primary fs-3">
+                        <i class="bi bi-pie-chart-fill"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-dark">@Model.CattleBreedsCount Cattle / @Model.BuffaloBreedsCount Buffalo</div>
+                        <div class="text-secondary small fw-medium">Class Balance (50/50)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 bg-info-subtle p-3 text-info fs-3">
+                        <i class="bi bi-cpu-fill"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-dark">@Model.TotalPredictionsCount</div>
+                        <div class="text-secondary small fw-medium">Inferences Logged in DB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 bg-warning-subtle p-3 text-warning fs-3">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-dark">@(Model.AverageConfidence > 0 ? $"{Model.AverageConfidence}%" : "N/A")</div>
+                        <div class="text-secondary small fw-medium">Avg Identification Confidence</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Architecture Pipeline Flow -->
+<div class="container my-5">
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-diagram-3-fill text-success me-2"></i> How BreedVision Works</h4>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <div class="fs-2 text-primary mb-2"><i class="bi bi-upload"></i></div>
+                    <h6 class="fw-bold">1. Image Ingestion</h6>
+                    <p class="small text-secondary mb-0">Multi-format upload (JPG/PNG/WEBP) with magic byte validation & size checks.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <div class="fs-2 text-success mb-2"><i class="bi bi-crop"></i></div>
+                    <h6 class="fw-bold">2. Tensor Preprocessing</h6>
+                    <p class="small text-secondary mb-0">ImageSharp resizes to 256x256, center-crops to 224x224, and standardizes RGB channels.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <div class="fs-2 text-warning mb-2"><i class="bi bi-cpu"></i></div>
+                    <h6 class="fw-bold">3. ONNX Feature Extraction</h6>
+                    <p class="small text-secondary mb-0">Local ResNet-50 execution outputs a 2048-dim feature vector in ~25ms on CPU.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <div class="fs-2 text-danger mb-2"><i class="bi bi-graph-up"></i></div>
+                    <h6 class="fw-bold">4. Metric Matching & Softmax</h6>
+                    <p class="small text-secondary mb-0">Cosine similarity against 10 breed centroid prototypes with calibrated softmax probabilities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Predictions Section -->
+@if (Model.RecentPredictions.Any())
+{
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history text-primary me-2"></i> Recent Inferences</h4>
+                <small class="text-secondary">Audit history recorded in SQL Server</small>
+            </div>
+            <a asp-controller="History" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill">View All Inferences</a>
+        </div>
+        <div class="row g-3">
+            @foreach (var item in Model.RecentPredictions)
+            {
+                <div class="col-md-4 col-lg-2">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden card-hover">
+                        <img src="@item.SavedImagePath" class="card-img-top object-fit-cover" style="height: 120px;" alt="@item.PredictedBreedName" onerror="this.src='/images/placeholder.png';">
+                        <div class="card-body p-2 text-center">
+                            <span class="badge @(item.Breed?.Species == "Buffalo" ? "badge-buffalo" : "badge-cattle") mb-1">
+                                @(item.Breed?.Species ?? "Bovine")
+                            </span>
+                            <h6 class="fw-bold mb-1 text-truncate">@item.PredictedBreedName</h6>
+                            <div class="small fw-semibold text-success">@item.ConfidenceScore.ToString("F1")%</div>
+                            <small class="text-secondary d-block mt-1" style="font-size: 0.75rem;">@item.PredictionTimestamp.ToLocalTime().ToString("MMM dd, HH:mm")</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

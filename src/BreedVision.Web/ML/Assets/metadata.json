@@ -1,0 +1,31 @@
+{
+  "model_name": "resnet50",
+  "feature_dim": 2048,
+  "input": {
+    "size": [3, 224, 224],
+    "mean": [0.485, 0.456, 0.406],
+    "std": [0.229, 0.224, 0.225]
+  },
+  "embedding_norm": "l2",
+  "similarity": "cosine",
+  "optimization_type": "maximum_10breed_near_perfect",
+  "breeds": [
+    "Bhadawari",
+    "Gir", 
+    "Jaffarbadi",
+    "Kankrej",
+    "Mehsana",
+    "Murrah",
+    "Ongole",
+    "Sahiwal",
+    "Surti",
+    "Tharparkar"
+  ],
+  "buffalo_breeds": ["Bhadawari", "Jaffarbadi", "Mehsana", "Murrah", "Surti"],
+  "cattle_breeds": ["Gir", "Kankrej", "Ongole", "Sahiwal", "Tharparkar"],
+  "total_breeds": 10,
+  "breed_types": {
+    "buffalo_count": 5,
+    "cattle_count": 5
+  }
+}
