@@ -26,9 +26,36 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, .brand-name {
-    font-family: var(--bv-heading);
+    font-family: var(--bv-font-heading);
     letter-spacing: -0.02em;
     color: #1e261a;
+}
+
+/* High contrast overrides for headings on dark backgrounds */
+.text-white,
+.text-white h1, .text-white h2, .text-white h3, .text-white h4, .text-white h5, .text-white h6,
+.bg-dark h1, .bg-dark h2, .bg-dark h3, .bg-dark h4, .bg-dark h5, .bg-dark h6,
+.bg-dark-gradient h1, .bg-dark-gradient h2, .bg-dark-gradient h3, .bg-dark-gradient h4, .bg-dark-gradient h5, .bg-dark-gradient h6,
+.card-header.bg-dark-gradient h1, .card-header.bg-dark-gradient h2, .card-header.bg-dark-gradient h3,
+.card-header.bg-dark-gradient h4, .card-header.bg-dark-gradient h5, .card-header.bg-dark-gradient h6 {
+    color: #ffffff !important;
+}
+
+.bg-dark-gradient p,
+.card-header.bg-dark-gradient p,
+.bg-dark-gradient .text-light-emphasis,
+.card-header.bg-dark-gradient .text-light-emphasis {
+    color: #e2ecd8 !important;
+}
+
+/* High-contrast pill badge on dark surfaces */
+.badge-dark-surface,
+.bg-dark-gradient .badge-onnx,
+.card-header.bg-dark-gradient .badge {
+    background-color: rgba(224, 184, 126, 0.22) !important;
+    color: #fdf8f0 !important;
+    border: 1px solid var(--bv-c5) !important;
+    font-weight: 600;
 }
 
 /* Palette Overrides for Bootstrap Primary / Success */

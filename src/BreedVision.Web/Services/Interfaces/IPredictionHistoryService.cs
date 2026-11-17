@@ -17,3 +17,4 @@ namespace BreedVision.Web.Services.Interfaces
         Task<bool> DeletePredictionAsync(int id);
     }
 }
+

@@ -7,13 +7,17 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
                 <div class="card-header bg-dark-gradient text-white p-4">
-                    <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div>
-                            <h3 class="fw-bold mb-1"><i class="bi bi-camera-fill text-success me-2"></i> Identify Bovine Breed</h3>
-                            <p class="text-light-emphasis small mb-0">Upload a photograph of an Indian cattle or buffalo to classify its breed.</p>
+                            <h3 class="fw-bold mb-1 text-white">
+                                <i class="bi bi-camera-fill me-2" style="color: #e0b87e;"></i> Identify Bovine Breed
+                            </h3>
+                            <p class="small mb-0" style="color: #e2ecd8;">
+                                Upload a photograph of an Indian cattle or buffalo to classify its breed.
+                            </p>
                         </div>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
-                            <i class="bi bi-cpu-fill me-1"></i> ONNX Active
+                        <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background-color: rgba(224, 184, 126, 0.22); color: #fdf8f0; border: 1px solid #e0b87e;">
+                            <i class="bi bi-cpu-fill me-1" style="color: #e0b87e;"></i> ONNX Active
                         </span>
                     </div>
                 </div>
@@ -85,7 +89,7 @@
                             <span class="small fw-bold text-secondary text-uppercase tracking-wider">Quick Research Samples</span>
                             <span class="badge bg-light text-secondary border">One-Click Testing</span>
                         </div>
-                        <div class="row g-2">
+                        <div class="row g-2 mb-3">
                             <div class="col-sm-6">
                                 <a asp-action="TestSample" asp-route-sampleName="gir" class="btn btn-light border text-start w-100 p-2 d-flex align-items-center gap-2 rounded-3 hover-shadow">
                                     <i class="bi bi-check-circle text-primary fs-5"></i>
@@ -103,6 +107,22 @@
                                         <small class="text-secondary" style="font-size: 0.75rem;">High butterfat river buffalo</small>
                                     </div>
                                 </a>
+                            </div>
+                        </div>
+
+                        <!-- Model Scope Notice -->
+                        <div class="p-3 rounded-3 border" style="background-color: #fbf9f4; border-color: #e0b87e !important;">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-patch-check-fill mt-1" style="color: #71873f;"></i>
+                                <div class="small">
+                                    <strong class="d-block text-dark mb-1">Comprehensive 41-Breed Bovine AI Scope:</strong>
+                                    <div class="text-secondary mb-1">
+                                        Identifies <strong>41 indigenous & naturalized Indian breeds</strong> (33 Cattle including Sahiwal, Red Sindhi, Rathi, Gir, Kankrej, Tharparkar, Ongole, Hallikar, Vechur + 8 Riverine Buffaloes including Murrah, Jaffrabadi, Bhadawari, Nili Ravi, Mehsana, Surti, Toda, Nagpuri).
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.78rem;">
+                                        Equipped with multi-class softmax probability ranking and out-of-distribution rejection if confidence is below 15%.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -197,3 +217,4 @@
         });
     </script>
 }
+

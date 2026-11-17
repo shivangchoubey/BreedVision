@@ -65,7 +65,10 @@ namespace BreedVision.Web.Services.Implementations
             double avgConfidence = 0;
             if (totalPredictions > 0)
             {
-                avgConfidence = (double)await _context.PredictionRecords.AverageAsync(p => p.ConfidenceScore);
+                var scores = await _context.PredictionRecords
+                    .Select(p => (double)p.ConfidenceScore)
+                    .ToListAsync();
+                avgConfidence = scores.Count > 0 ? scores.Average() : 0.0;
             }
 
             var recentPredictions = await _context.PredictionRecords
@@ -93,3 +96,4 @@ namespace BreedVision.Web.Services.Implementations
         }
     }
 }
+

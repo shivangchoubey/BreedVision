@@ -160,15 +160,15 @@
             <div class="col-md-3">
                 <div class="p-3 border rounded-3 h-100 bg-light">
                     <div class="fs-2 mb-2" style="color: #688557;"><i class="bi bi-cpu"></i></div>
-                    <h6 class="fw-bold">3. ONNX Feature Extraction</h6>
-                    <p class="small text-secondary mb-0">Local ResNet-50 execution outputs a 2048-dim feature vector in ~25ms on CPU.</p>
+                    <h6 class="fw-bold">3. ONNX Vision Backbone</h6>
+                    <p class="small text-secondary mb-0">Local ConvNeXt execution processes bovine phenotypes in ~35ms on CPU.</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="p-3 border rounded-3 h-100 bg-light">
                     <div class="fs-2 mb-2" style="color: #a36627;"><i class="bi bi-graph-up"></i></div>
-                    <h6 class="fw-bold">4. Metric Matching & Softmax</h6>
-                    <p class="small text-secondary mb-0">Cosine similarity against 10 breed centroid prototypes with calibrated softmax probabilities.</p>
+                    <h6 class="fw-bold">4. 41-Class Calibrated Softmax</h6>
+                    <p class="small text-secondary mb-0">Multi-class probability distribution across 41 ICAR categories with out-of-distribution rejection.</p>
                 </div>
             </div>
         </div>

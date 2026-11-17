@@ -15,8 +15,23 @@ src/BreedVision.Web/wwwroot/uploads/*
 
 ## Test Results & Artifacts
 TestResults/
+test_bin/
 *.trx
 *.coverage
+
+## Local SQLite Database
+src/BreedVision.Web/Data/*.db
+src/BreedVision.Web/Data/*.db-shm
+src/BreedVision.Web/Data/*.db-wal
+
+## Large ML weight files (>100MB)
+*.pth
+src/BreedVision.Web/ML/Assets40/*.pth
+src/BreedVision.Web/ML/Assets/model.onnx
+src/BreedVision.Web/ML/Assets/prototypes.json
+
+## Release Archives
+*.zip
 
 ## Python cache
 __pycache__/

@@ -7,3 +7,4 @@ namespace BreedVision.Web.Services.Interfaces
         bool DeleteImage(string relativePath);
     }
 }
+

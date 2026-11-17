@@ -21,3 +21,4 @@ namespace BreedVision.Web.Services.Interfaces
         Task<DashboardStatsViewModel> GetDashboardStatsAsync();
     }
 }
+

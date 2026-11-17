@@ -6,6 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Cloud Deployment Port Support (Render, Railway, Fly.io, Container)
+var cloudPort = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(cloudPort))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{cloudPort}");
+}
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -75,10 +82,10 @@ using (var scope = app.Services.CreateScope())
     {
         var env = services.GetRequiredService<IWebHostEnvironment>();
         var uploadsDir = Path.Combine(env.WebRootPath, "uploads");
-        if (!Directory.Exists(uploadsDir))
-        {
-            Directory.CreateDirectory(uploadsDir);
-        }
+        if (!Directory.Exists(uploadsDir)) Directory.CreateDirectory(uploadsDir);
+
+        var dataDir = Path.Combine(env.ContentRootPath, "Data");
+        if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
 
         await DbInitializer.InitializeAsync(context, logger);
     }
@@ -89,13 +96,17 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

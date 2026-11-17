@@ -10,34 +10,35 @@ using SixLabors.ImageSharp.Processing;
 
 namespace BreedVision.Web.Services.Implementations
 {
+    /// <summary>
+    /// ONNX inference service for the 41-breed Indian bovine classification model.
+    /// Uses ujjwal75/indian-bovine-breeds-model (ResNet-50, 41-class softmax).
+    /// Input: [1, 3, 224, 224] ImageNet-normalized RGB tensor.
+    /// Output: [1, 41] logits over 41 ICAR/Indian bovine breed classes.
+    /// </summary>
     public class OnnxBreedClassifierService : IBreedClassifierService, IDisposable
     {
         private readonly ILogger<OnnxBreedClassifierService> _logger;
         private readonly IWebHostEnvironment _env;
         private InferenceSession? _session;
-        private Dictionary<string, float[]>? _prototypes;
+        private List<string>? _classes;         // class index → breed name
         private readonly object _initLock = new();
         private bool _isInitialized = false;
 
+        // ImageNet normalization constants (same for both models)
         private readonly float[] _mean = [0.485f, 0.456f, 0.406f];
-        private readonly float[] _std = [0.229f, 0.224f, 0.225f];
+        private readonly float[] _std  = [0.229f, 0.224f, 0.225f];
 
-        private static readonly string[] BuffaloBreeds =
-        [
-            "Bhadawari", "Jaffarbadi", "Mehsana", "Murrah", "Surti"
-        ];
+        // Buffalo breeds in the 41-class list (rest are cattle)
+        private static readonly HashSet<string> BuffaloBreedSet = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Bhadawari", "Jaffrabadi", "Mehsana", "Murrah",
+            "Nagpuri", "Nili Ravi", "Nili_Ravi", "Surti", "Toda"
+        };
 
-        private static readonly string[] CattleBreeds =
-        [
-            "Gir", "Kankrej", "Ongole", "Sahiwal", "Tharparkar"
-        ];
-
-        public IReadOnlyList<string> SupportedBreeds =>
-            [.. BuffaloBreeds, .. CattleBreeds];
-
-        // If maximum cosine similarity is below 0.65 or top confidence is under 30%, flag as Out-Of-Distribution (OOD)
-        public double LowConfidenceThreshold => 40.0;
-        public float SimilarityRejectionThreshold => 0.68f;
+        public IReadOnlyList<string> SupportedBreeds => _classes ?? [];
+        public double LowConfidenceThreshold => 15.0;    // softmax % below which we flag OOD
+        public float SimilarityRejectionThreshold => 0.15f;
 
         public OnnxBreedClassifierService(
             ILogger<OnnxBreedClassifierService> logger,
@@ -51,58 +52,42 @@ namespace BreedVision.Web.Services.Implementations
         private void Initialize()
         {
             if (_isInitialized) return;
-
             lock (_initLock)
             {
                 if (_isInitialized) return;
-
                 try
                 {
                     var assetsDir = Path.Combine(_env.ContentRootPath, "ML", "Assets");
-                    var modelPath = Path.Combine(assetsDir, "model.onnx");
-                    var protoPath = Path.Combine(assetsDir, "prototypes.json");
+                    var modelPath = Path.Combine(assetsDir, "model_41breed.onnx");
+                    var classesPath = Path.Combine(assetsDir, "classes.json");
 
                     if (!File.Exists(modelPath))
-                    {
-                        throw new FileNotFoundException($"ONNX model not found at {modelPath}");
-                    }
+                        throw new FileNotFoundException($"41-breed ONNX model not found at: {modelPath}. Run export_to_onnx.py first.");
 
-                    if (!File.Exists(protoPath))
-                    {
-                        throw new FileNotFoundException($"Prototypes file not found at {protoPath}");
-                    }
+                    if (!File.Exists(classesPath))
+                        throw new FileNotFoundException($"classes.json not found at: {classesPath}.");
 
-                    _logger.LogInformation("Loading ONNX inference session from {Path}...", modelPath);
-                    var sessionOptions = new Microsoft.ML.OnnxRuntime.SessionOptions
+                    _logger.LogInformation("Loading 41-breed ONNX model from {Path}...", modelPath);
+                    var opts = new Microsoft.ML.OnnxRuntime.SessionOptions
                     {
                         GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL,
                         ExecutionMode = ExecutionMode.ORT_SEQUENTIAL
                     };
-                    _session = new InferenceSession(modelPath, sessionOptions);
+                    _session = new InferenceSession(modelPath, opts);
 
-                    _logger.LogInformation("Loading breed prototypes from {Path}...", protoPath);
-                    var json = File.ReadAllText(protoPath);
-                    using var doc = JsonDocument.Parse(json);
-                    var protoRoot = doc.RootElement.GetProperty("prototypes");
-
-                    _prototypes = new Dictionary<string, float[]>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var prop in protoRoot.EnumerateObject())
-                    {
-                        var arr = new float[2048];
-                        int i = 0;
-                        foreach (var num in prop.Value.EnumerateArray())
-                        {
-                            arr[i++] = num.GetSingle();
-                        }
-                        _prototypes[prop.Name] = arr;
-                    }
+                    var json = File.ReadAllText(classesPath);
+                    _classes = JsonSerializer.Deserialize<List<string>>(json)
+                        ?? throw new InvalidDataException("classes.json is empty or malformed.");
 
                     _isInitialized = true;
-                    _logger.LogInformation("BreedVision ONNX Classifier initialized with {Count} breed prototypes.", _prototypes.Count);
+                    _logger.LogInformation(
+                        "BreedVision 41-Breed Classifier ready: {Count} classes, model input {Shape}.",
+                        _classes.Count,
+                        string.Join("×", _session.InputMetadata.Values.First().Dimensions));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to initialize ONNX Classifier Service.");
+                    _logger.LogError(ex, "Failed to initialize 41-breed ONNX Classifier.");
                     throw;
                 }
             }
@@ -110,115 +95,92 @@ namespace BreedVision.Web.Services.Implementations
 
         public async Task<BreedClassificationResult> ClassifyImageAsync(Stream imageStream, string fileName)
         {
-            if (!_isInitialized || _session == null || _prototypes == null)
-            {
-                Initialize();
-            }
+            if (!_isInitialized) Initialize();
 
-            var stopwatch = Stopwatch.StartNew();
+            var sw = Stopwatch.StartNew();
 
-            // 1. Decode & Preprocess image using ImageSharp
+            // 1. Preprocess: resize shortest edge to 256, center-crop to 224×224
             using var image = await Image.LoadAsync<Rgb24>(imageStream);
+            image.Mutate(ctx => ctx
+                .Resize(new ResizeOptions { Size = new Size(256, 256), Mode = ResizeMode.Crop })
+                .Crop(new Rectangle(16, 16, 224, 224)));
 
-            // Resize smaller edge to 256, then center-crop to 224x224 (ResNet-50 standard)
-            image.Mutate(ctx => ctx.Resize(new ResizeOptions
-            {
-                Size = new Size(256, 256),
-                Mode = ResizeMode.Crop
-            }).Crop(new Rectangle(16, 16, 224, 224)));
-
-            // 2. Build DenseTensor [1, 3, 224, 224] with ImageNet normalization
+            // 2. Build float tensor [1, 3, 224, 224] with ImageNet normalization
             var tensor = new DenseTensor<float>(new[] { 1, 3, 224, 224 });
-            image.ProcessPixelRows(accessor =>
+            image.ProcessPixelRows(acc =>
             {
-                for (int y = 0; y < accessor.Height; y++)
+                for (int y = 0; y < acc.Height; y++)
                 {
-                    var row = accessor.GetRowSpan(y);
-                    for (int x = 0; x < accessor.Width; x++)
+                    var row = acc.GetRowSpan(y);
+                    for (int x = 0; x < acc.Width; x++)
                     {
                         var p = row[x];
-                        tensor[0, 0, y, x] = ((p.R / 255.0f) - _mean[0]) / _std[0];
-                        tensor[0, 1, y, x] = ((p.G / 255.0f) - _mean[1]) / _std[1];
-                        tensor[0, 2, y, x] = ((p.B / 255.0f) - _mean[2]) / _std[2];
+                        tensor[0, 0, y, x] = ((p.R / 255f) - _mean[0]) / _std[0];
+                        tensor[0, 1, y, x] = ((p.G / 255f) - _mean[1]) / _std[1];
+                        tensor[0, 2, y, x] = ((p.B / 255f) - _mean[2]) / _std[2];
                     }
                 }
             });
 
-            // 3. Run ONNX Inference to extract 2048-dim feature embedding
+            // 3. Run ONNX inference → logits [1, 41]
             var inputName = _session!.InputMetadata.Keys.First();
             using var outputs = _session.Run(new[] { NamedOnnxValue.CreateFromTensor(inputName, tensor) });
-            var rawFeatures = outputs.First().AsEnumerable<float>().ToArray();
+            var logits = outputs.First().AsEnumerable<float>().ToArray();
 
-            // L2-normalize extracted features
-            double norm = Math.Sqrt(rawFeatures.Select(f => (double)f * f).Sum());
-            var features = new float[rawFeatures.Length];
-            if (norm > 1e-6)
-            {
-                for (int i = 0; i < rawFeatures.Length; i++)
+            // 4. Softmax → probabilities
+            var probs = Softmax(logits);
+
+            // 5. Rank all 41 classes
+            var ranked = probs
+                .Select((p, i) => (Prob: p, Index: i, Name: NormalizeClassName(_classes![i])))
+                .OrderByDescending(x => x.Prob)
+                .Select((x, rank) => new ClassPrediction
                 {
-                    features[i] = (float)(rawFeatures[i] / norm);
-                }
-            }
-            else
-            {
-                features = rawFeatures;
-            }
-
-            // 4. Compute Cosine Similarity with each breed prototype
-            var similarities = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-            foreach (var kvp in _prototypes!)
-            {
-                float dot = 0f;
-                var proto = kvp.Value;
-                for (int i = 0; i < 2048; i++)
-                {
-                    dot += features[i] * proto[i];
-                }
-                similarities[kvp.Key] = dot;
-            }
-
-            // 5. Compute Mathematical Metric Match Confidence
-            // In metric prototype learning, cosine similarity dot(features, prototype) in [-1, 1] 
-            // directly represents the phenotypic alignment score with each breed centroid.
-            float maxSim = similarities.Values.Max();
-
-            // Normalize positive similarities to sum to 100% for relative distribution chart
-            var positiveSims = similarities.ToDictionary(k => k.Key, v => Math.Max(0f, v.Value));
-            float sumPositive = positiveSims.Values.Sum();
-            if (sumPositive < 1e-6f) sumPositive = 1f;
-
-            // Rank predictions
-            var ranked = similarities
-                .OrderByDescending(kv => kv.Value)
-                .Select((kv, index) => new ClassPrediction
-                {
-                    BreedName = kv.Key,
-                    // Individual alignment percentage (e.g. 0.814 -> 81.4%)
-                    ConfidencePercent = Math.Round(kv.Value * 100.0, 1),
-                    Rank = index + 1,
-                    Species = BuffaloBreeds.Contains(kv.Key, StringComparer.OrdinalIgnoreCase) ? "Buffalo" : "Cattle"
+                    BreedName       = x.Name,
+                    ConfidencePercent = Math.Round(x.Prob * 100.0, 1),
+                    Rank            = rank + 1,
+                    Species         = BuffaloBreedSet.Contains(x.Name) ? "Buffalo" : "Cattle"
                 })
                 .ToList();
 
+            sw.Stop();
+
             var top = ranked[0];
-            stopwatch.Stop();
+            bool isLowConf = top.ConfidencePercent < LowConfidenceThreshold;
 
-            // Out-of-Distribution (OOD) check:
-            // High-quality bovine images achieve > 0.75 similarity. Low similarity (< 0.68) indicates 
-            // an unsupported breed, non-bovine image, or heavily obscured photograph.
-            bool isLowConfidence = maxSim < SimilarityRejectionThreshold;
-
-            _logger.LogInformation("Classified {FileName} in {Ms}ms. Top: {Breed} (Similarity Match: {Sim:F1}%, LowConf: {Low})",
-                fileName, stopwatch.ElapsedMilliseconds, top.BreedName, top.ConfidencePercent, isLowConfidence);
+            _logger.LogInformation(
+                "Classified {File} in {Ms}ms → {Breed} ({Conf:F1}%, LowConf:{Low})",
+                fileName, sw.ElapsedMilliseconds, top.BreedName, top.ConfidencePercent, isLowConf);
 
             return new BreedClassificationResult
             {
-                TopBreedName = top.BreedName,
+                TopBreedName      = top.BreedName,
                 ConfidencePercent = top.ConfidencePercent,
-                IsLowConfidence = isLowConfidence,
-                TopPredictions = ranked.Take(5).ToList(),
-                InferenceDurationMs = stopwatch.ElapsedMilliseconds
+                IsLowConfidence   = isLowConf,
+                TopPredictions    = ranked.Take(5).ToList(),
+                InferenceDurationMs = sw.ElapsedMilliseconds
             };
+        }
+
+        // ── Helpers ──────────────────────────────────────────────────────────
+
+        private static float[] Softmax(float[] logits)
+        {
+            float maxLogit = logits.Max();
+            var exps = logits.Select(x => MathF.Exp(x - maxLogit)).ToArray();
+            float sum = exps.Sum();
+            return exps.Select(e => e / sum).ToArray();
+        }
+
+        /// <summary>
+        /// Converts model class names like "Red_Sindhi" or "Malnad_gidda" to "Red Sindhi" / "Malnad Gidda".
+        /// </summary>
+        private static string NormalizeClassName(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return raw;
+            var parts = raw.Split('_', StringSplitOptions.RemoveEmptyEntries);
+            return string.Join(" ", parts.Select(p =>
+                p.Length > 0 ? char.ToUpperInvariant(p[0]) + p[1..] : p));
         }
 
         public void Dispose()

@@ -167,3 +167,4 @@ BreedVision/
 ## ⚖️ License & Acknowledgments
 - Pretrained weights based on research by `vishnuamar/cattle-breed-classifier` under Apache-2.0.
 - Breed characteristics referenced from the **ICAR - National Bureau of Animal Genetic Resources (NBAGR)**, Karnal, India.
+

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: breedvision
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: master
+    healthCheckPath: /
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DatabaseProvider
+        value: Sqlite

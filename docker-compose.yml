@@ -20,3 +20,4 @@ services:
 volumes:
   breedvision_data:
   breedvision_uploads:
+
